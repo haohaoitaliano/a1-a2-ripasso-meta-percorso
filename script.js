@@ -175,10 +175,12 @@ function isTranslationCorrect(question) {
 }
 
 function normalizeTranslation(value) {
-  return normalize(value)
-    .replace(/\s*;\s*/g, ". ")
-    .replace(/\.\s*\./g, ".")
-    .replace(/[.!?]+$/g, "")
+  return value
+    .normalize("NFKC")
+    .toLocaleLowerCase("it-IT")
+    .replace(/['"‘’“”‚‛„‟‹›«»`´]/gu, "")
+    .replace(/\p{P}+/gu, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
