@@ -104,6 +104,10 @@ h1 { margin: 0; color: var(--green); font-family: Georgia, "Noto Serif SC", seri
 .choices input { width: 20px; height: 20px; margin: 0 10px 0 0; accent-color: var(--green); }
 
 .text-label { display: block; margin-top: 12px; color: #5C6A62; font-size: .9rem; font-weight: 650; }
+.useful-words { margin: 10px 0 0; padding: 9px 11px; border-left: 3px solid var(--sage); border-radius: 6px; color: #58685F; background: rgba(230, 240, 232, .55); font-size: .88rem; line-height: 1.5; }
+.useful-words strong, .useful-words span { display: block; }
+.useful-words strong { color: var(--green); }
+.mini-tip { margin: 7px 0 0; color: #68776E; font-size: .84rem; }
 textarea { display: block; width: 100%; min-height: 100px; margin-top: 6px; padding: 12px; resize: vertical; border: 1.5px solid #9FB4A5; border-radius: 10px; color: var(--text); background: #fff; line-height: 1.55; outline: none; }
 
 .question.needs-review { border-color: #C9857D; background: #FFFDFC; box-shadow: inset 4px 0 0 #C9857D; }

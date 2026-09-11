@@ -89,28 +89,73 @@ const acceptedAnswers = {
   translation1: (() => {
     const ages = ["vent'anni", "20 anni"];
     const times = ["stasera", "questa sera"];
-    const friends = ["i suoi amici", "le sue amiche"];
+    const friends = ["gli amici", "i suoi amici", "le sue amiche"];
     const answers = [];
     ages.forEach((age) => times.forEach((time) => friends.forEach((friend) => {
-      answers.push(`Mia sorella ha ${age} e ${time} vuole uscire con ${friend}.`);
-      answers.push(`Mia sorella ha ${age} e vuole uscire con ${friend} ${time}.`);
+      const ageClauses = [
+        `Quest'anno mia sorella ha ${age}`,
+        `Mia sorella quest'anno ha ${age}`,
+        `Mia sorella ha ${age} quest'anno`,
+        `Mia sorella ha ${age}`
+      ];
+      const outingClauses = [
+        `${time} mia sorella vuole uscire con ${friend}`,
+        `Mia sorella ${time} vuole uscire con ${friend}`,
+        `Mia sorella vuole uscire con ${friend} ${time}`
+      ];
+      const implicitOutingClauses = [
+        `${time} vuole uscire con ${friend}`,
+        `vuole uscire con ${friend} ${time}`
+      ];
+      const implicitAgeClauses = [
+        `Quest'anno ha ${age}`,
+        `Ha ${age} quest'anno`,
+        `Ha ${age}`
+      ];
+
+      ageClauses.forEach((ageClause) => implicitOutingClauses.forEach((outingClause) => {
+        answers.push(`${ageClause} e ${outingClause}.`);
+        answers.push(`${ageClause}, ${outingClause}.`);
+        answers.push(`${ageClause}. ${outingClause}.`);
+      }));
+      outingClauses.forEach((outingClause) => implicitAgeClauses.forEach((ageClause) => {
+        answers.push(`${outingClause}. ${ageClause}.`);
+      }));
     })));
     return answers;
   })(),
   translation2: (() => {
-    const openings = ["Di solito il sabato", "Il sabato di solito"];
+    const sentencePatterns = [
+      (destination) => `Di solito il sabato andiamo ${destination}`,
+      (destination) => `Il sabato di solito andiamo ${destination}`,
+      (destination) => `Di solito andiamo ${destination} il sabato`,
+      (destination) => `Il sabato andiamo di solito ${destination}`
+    ];
     const destinations = ["a casa dei nostri nonni", "dai nostri nonni"];
+    const houseSubjects = ["La loro casa", "La casa dei nostri nonni", "Casa loro"];
     const descriptions = ["molto grande e molto bella", "molto grande e bella"];
     const answers = [];
-    openings.forEach((opening) => destinations.forEach((destination) => descriptions.forEach((description) => {
-      answers.push(`${opening} andiamo ${destination}. La loro casa è ${description}.`);
-    })));
+    sentencePatterns.forEach((pattern) => destinations.forEach((destination) => houseSubjects.forEach((houseSubject) => descriptions.forEach((description) => {
+      answers.push(`${pattern(destination)}. ${houseSubject} è ${description}.`);
+    }))));
     return answers;
   })(),
-  translation3: [
-    "Sai a che ora viene il mio amico Marco? Di solito viene a casa mia alle otto di sera.",
-    "Sai a che ora viene il mio amico Marco? Di solito viene a casa mia alle otto."
-  ]
+  translation3: (() => {
+    const questions = [
+      "Sai a che ora viene il mio amico Marco?",
+      "Sai a che ora il mio amico Marco viene?",
+      "Sai a che ora viene Marco, il mio amico?"
+    ];
+    const secondClauses = [
+      "Di solito viene a casa mia alle otto di sera.",
+      "Di solito viene a casa mia alle otto.",
+      "Di solito viene alle otto di sera a casa mia.",
+      "Di solito viene alle otto a casa mia.",
+      "Viene di solito a casa mia alle otto di sera.",
+      "Viene di solito a casa mia alle otto."
+    ];
+    return questions.flatMap((question) => secondClauses.map((secondClause) => `${question} ${secondClause}`));
+  })()
 };
 
 function isTextQuestionCorrect(question) {
@@ -125,8 +170,16 @@ function isChoiceQuestionCorrect(question) {
 function isTranslationCorrect(question) {
   const textarea = question.querySelector("textarea");
   const variants = acceptedAnswers[textarea.dataset.validator];
-  const answer = normalize(textarea.value);
-  return variants.some((variant) => normalize(variant) === answer);
+  const answer = normalizeTranslation(textarea.value);
+  return variants.some((variant) => normalizeTranslation(variant) === answer);
+}
+
+function normalizeTranslation(value) {
+  return normalize(value)
+    .replace(/\s*;\s*/g, ". ")
+    .replace(/\.\s*\./g, ".")
+    .replace(/[.!?]+$/g, "")
+    .trim();
 }
 
 function isQuestionCorrect(question) {
