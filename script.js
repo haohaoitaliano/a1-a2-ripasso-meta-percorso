@@ -178,6 +178,8 @@ function normalizeTranslation(value) {
   return value
     .normalize("NFKC")
     .toLocaleLowerCase("it-IT")
+    .replace(/[’‘`´]/gu, "'")
+    .replace(/\s*'\s*/g, "'")
     .replace(/['"‘’“”‚‛„‟‹›«»`´]/gu, "")
     .replace(/\p{P}+/gu, " ")
     .replace(/\s+/g, " ")
